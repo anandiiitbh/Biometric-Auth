@@ -1,12 +1,18 @@
 const express = require("express");
 const app = express();
 const http = require("http");
+const cors = require("cors");
+app.use(cors());
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["get", "post"],
+  },
+});
 const PORT = 3000;
-const CONN_PORT = "chat message";
-const CONN_PORT_INIT = "user joined";
+const CONN_PORT = "new-connection";
 
 app.get("/", (req, res) => {
   res.send("Hey, Hi TODOers");
@@ -14,11 +20,8 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   socket.on(CONN_PORT, (msg) => {
-    io.emit(CONN_PORT, msg);
-  });
-
-  socket.on(CONN_PORT_INIT, (msg) => {
-    console.log("New User: " + msg.name + " Joined");
+    io.emit(CONN_PORT, { key: "good" });
+    console.log("hi", msg);
   });
 });
 
